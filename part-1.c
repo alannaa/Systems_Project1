@@ -35,7 +35,8 @@ void exit(int err){
 /* read one line from stdin (file descriptor 0) into a buffer: */
 // Returns the number of bytes read in
 int readln(char* buf, int maxlen){
-    for(int i = 0; i < MAXLEN; i++){
+    int i = 0;
+    for(i; i < MAXLEN; i++){
         int len = read(0, (void*) buf, len);
 
         if (buf[len] == '\n'){
