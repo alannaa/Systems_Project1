@@ -50,7 +50,7 @@ void *mmap(void *addr, int len, int prot, int flags, int fd, int offset){
 }
 
 int munmap(void *addr, int len){
-		return syscall(__NR_munmap, addre, len);
+		return syscall(__NR_munmap, addr, len);
 }
 
 /* ---------- */
@@ -64,15 +64,15 @@ int munmap(void *addr, int len){
 
 void do_readline(char *buf, int len){
 		int i = 0;
-		for(i=0; i < MAXLEN; i++){
+		for(i=0; i < MAXLINE; i++){
 				read(0, (void*) buf+i, 1);
 
 				if (buf[i] == '\n'){
 						buf[i] = '\0';
-						return i;
+						return i + 1;
 					}
 				}
-	return MAXLEN;
+	return MAXLINE;
 }
 
 /* Prints len characters in buf to stdout */
@@ -115,8 +115,8 @@ int streq(char *str1, char *str2) {
     if (len1 != len2) {
         return 0;
     }
-
-    for (int i = 0; i < len1; ++i) {
+		int i;
+    for (i = 0; i < len1; ++i) {
         if (str1[i] != str2[i]) {
             return 0;
         }
@@ -159,7 +159,7 @@ int split(char **argv, int max_argc, char *line)
  *   function call to hdr.e_entry
  *   munmap each mmap'ed region so we don't crash the 2nd time
  */
-void load_header(constr struct elf_phdr *phdr, int fd, void** unmap_addr, int* unmap_size) {
+void load_header(const struct elf_phdr *phdr, int fd, void** unmap_addr, int* unmap_size) {
 		if (phdr->p_type == PTLOAD) {
 				//The addresses pased to mmap must be a multiple of 4096 for it to work in valgrind
 				void* write_addr = phdr->p_vaddr + LOADADDR;
@@ -209,7 +209,7 @@ void runprogram(char* filename) {
 		load_header(&phdrs[i], fd, &unmap_addrs[i], &unmap_sizes[i]);
 	}
 
-	//function call to the program entry point 
+	//function call to the program entry point
 	void (*f)();
 	f = hdr.e_entry + LOADADDR;
 	f();
