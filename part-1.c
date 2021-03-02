@@ -36,12 +36,12 @@ void exit(int err){
 // Returns the number of bytes read in
 int readln(char* buf, int maxlen){
     int i = 0;
-    for(i; i < MAXLEN; i++){
+    for(i=0; i < MAXLEN; i++){
         read(0, (void*) buf+i, 1);
 
         if (buf[i] == '\n'){
             buf[i] = '\0';
-            return len;
+            return i;
         }
     }
     return MAXLEN;
