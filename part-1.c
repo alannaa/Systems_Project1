@@ -38,8 +38,8 @@ int readln(char* buf, int maxlen){
     for(int i = 0; i < MAXLEN; i++){
         int len = read(0, (void*) buf, len);
 
-        if (buf[len] == "\n"){
-            buf[len] = "\0";
+        if (buf[len] == '\n'){
+            buf[len] = '\0';
             return len;
         }
     }
@@ -54,8 +54,8 @@ void print(char* buf, int len){
 /* print a string to stdout (file descriptor 1) */
 void writeln(char* buf, int len){
     write(1, buf, len);
-    char nt = "\n";
-    write(1, &nt, 1);
+    char nu = '\n';
+    write(1, &nu, 1);
 }
 
 int strlen(char* str){
@@ -81,7 +81,7 @@ void main(void){
 	 while(1){
       char buf[MAXLEN];
       print(bulletpt, strlen(bulletpt));
-      int len = readln(buf, MAXLEN);
+      readln(buf, MAXLEN);
 
       if(buf[0] == 'q' && buf[1] == 'u' && buf[2] == 'i' && buf[3] == 't'){
           exit(0);
