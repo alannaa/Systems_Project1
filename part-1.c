@@ -37,10 +37,10 @@ void exit(int err){
 int readln(char* buf, int maxlen){
     int i = 0;
     for(i; i < MAXLEN; i++){
-        int len = read(0, (void*) buf, len);
+        read(0, (void*) buf+i, 1);
 
-        if (buf[len] == '\n'){
-            buf[len] = '\0';
+        if (buf[i] == '\n'){
+            buf[i] = '\0';
             return len;
         }
     }
