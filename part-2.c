@@ -45,8 +45,8 @@ int lseek(int fd, int offset, int flag){
 		return syscall(__NR_lseek, fd, offset, flag);
 }
 
-void *mmap(void *addr, int len, int prot, int flags, int fd, int offset){
-		syscall(__NR_mmap, addr, len, prot, flags, fd, offset);
+void* mmap(void *addr, int len, int prot, int flags, int fd, int offset){
+		return syscall(__NR_mmap, addr, len, prot, flags, fd, offset);
 }
 
 int munmap(void *addr, int len){
@@ -62,7 +62,7 @@ int munmap(void *addr, int len){
  *  - use global variables for getarg
  */
 
-void do_readline(char *buf, int len){
+int do_readline(char *buf, int len){
 		int i = 0;
 		for(i=0; i < MAXLINE; i++){
 				read(0, (void*) buf+i, 1);
@@ -160,7 +160,7 @@ int split(char **argv, int max_argc, char *line)
  *   munmap each mmap'ed region so we don't crash the 2nd time
  */
 void load_header(const struct elf_phdr *phdr, int fd, void** unmap_addr, int* unmap_size) {
-		if (phdr->p_type == PTLOAD) {
+		if (phdr->p_type == PT_LOAD) {
 				//The addresses pased to mmap must be a multiple of 4096 for it to work in valgrind
 				void* write_addr = phdr->p_vaddr + LOADADDR;
 				void* map_addr = (void*) ROUND_DOWN((unsigned long) write_addr, 4096);
@@ -198,7 +198,7 @@ void runprogram(char* filename) {
 	int i, n = hdr.e_phnum;
 	struct elf64_phdr phdrs[n]; //create an arr of phdrs with the size, n, set to phnum
 	lseek(fd, hdr.e_phoff, SEEK_SET);
-	read(fd, phdrs, sizeof(phdrs);
+	read(fd, phdrs, sizeof(phdrs));
 
 	// arrays to keep track of mmapped addresses
 	void* unmap_addrs[hdr.e_phnum];
@@ -216,8 +216,8 @@ void runprogram(char* filename) {
 
 	// munmap allocated regions
 	for (i = 0; i < hdr.e_phnum; i++) {
-		if (phdrs[i].p_type == PT_LOAD) {
-			munmap(unmap_addr[i], unmap_sizes[i]);
+			if (phdrs[i].p_type == PT_LOAD) {
+				munmap(unmap_addr[i], unmap_sizes[i]);
 		}
 	}
 	close(fd);
